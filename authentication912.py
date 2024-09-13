@@ -23,7 +23,6 @@ UserID | Username | Password
 mycursor = mydb.cursor()
 
 # This function checks for inserted user and password to first figure out if the user is in the database, to either tell them to sign up (instead of sign in) or proceed to check their inputted password. If the username exists, the password must match the user, or else it will give the user a message box that the password is incorrect.
-
 def sendinfo(u, p):
    sql = f"SELECT * FROM logininfo"
    try:
