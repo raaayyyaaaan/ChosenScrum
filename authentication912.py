@@ -5,7 +5,6 @@ from tkinter import messagebox
 import mysql.connector
 
 # Connects our code to a database online that exists on the host website
-
 mydb = mysql.connector.connect(
  host="sql5.freesqldatabase.com",
  user="sql5730781",
