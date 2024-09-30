@@ -14,7 +14,7 @@ def fwd(speed, time):
   final_str = bin_speed + bin_time
   out["forward"] = '00'+final_str
   global y
-  y+=1 #Updating the y-coordinate. For example, if you start at (0,0), after running forward command, you get (0,1), then (0,2) after running it again.
+  y+=speed*time #Updating the y-coordinate. For example, if you start at (0,0), after running forward command, you get (0,1), then (0,2) after running it again.
   out["coordinates"] = f'({x},{y})' #Shows that the forward command was run; shows the coordinate after running the function
   out['success']=True #Shows whether it was successful
   return jsonify(out) #Returns the JSON output
@@ -25,7 +25,7 @@ def fwd(speed, time):
 @app.route('/bwd/<int:speed>/<int:time>', methods = ['POST']) #Creating the backward command API
 def bwd(speed, time):
   global y
-  y-=1
+  y-=speed*time
   out = {}
   bin_speed = '{0:08b}'.format(speed)
   bin_time = '{0:08b}'.format(time)
@@ -39,7 +39,7 @@ def bwd(speed, time):
 @app.route('/right/<int:speed>/<int:time>', methods = ['POST']) #Creating the right command API
 def right(speed, time):
   global x
-  x+=1
+  x+=speed*time
   out = {}
   bin_speed = '{0:08b}'.format(speed)
   bin_time = '{0:08b}'.format(time)
@@ -53,7 +53,7 @@ def right(speed, time):
 @app.route('/left/<int:speed>/<int:time>', methods = ['POST']) #Creating the left command API
 def left(speed, time):
   global x
-  x-=1
+  x-=speed*time
   out = {}
   bin_speed = '{0:08b}'.format(speed)
   bin_time = '{0:08b}'.format(time)
