@@ -6,42 +6,60 @@ x = 0 #x-coordinate of where the robot is located. for reference, the origin wil
 y = 0 #y-coordinate of where the robot is located
 
 #fwd() will not take in any parameters. It will output the new coordinates of the robot, where the y coordinate will be updated, and confirmation that the request was successfully processed.
-@app.route('/fwd', methods = ['POST']) #Creating an api with the post method. The post method sends a request to the server to be processed
-def fwd():
+@app.route('/fwd/<int:speed>/<int:time>', methods = ['POST']) #Creating an api with the post method. The post method sends a request to the server to be processed
+def fwd(speed, time):
+  out = {}
+  bin_speed = '{0:08b}'.format(speed)
+  bin_time = '{0:08b}'.format(time)
+  final_str = bin_speed + bin_time
+  out["forward"] = '00'+final_str
   global y
   y+=1 #Updating the y-coordinate. For example, if you start at (0,0), after running forward command, you get (0,1), then (0,2) after running it again.
-  out = {} #What the API will return as the output
-  out["forward"] = f'({x},{y})' #Shows that the forward command was run; shows the coordinate after running the function
+  out["coordinates"] = f'({x},{y})' #Shows that the forward command was run; shows the coordinate after running the function
   out['success']=True #Shows whether it was successful
   return jsonify(out) #Returns the JSON output
 
+
+#to run fwd with speed=10 and time=20: curl -X POST http://127.0.0.1:5000/fwd/10/20
 #bwd() will not take in any parameters. It will output the new coordinates of the robot, where the y coordinate will be updated, and confirmation that the request was successfully processed.
-@app.route('/bwd', methods = ['POST']) #Creating the backward command API
-def bwd():
+@app.route('/bwd/<int:speed>/<int:time>', methods = ['POST']) #Creating the backward command API
+def bwd(speed, time):
   global y
   y-=1
   out = {}
-  out["backward"] = f'({x},{y})'
+  bin_speed = '{0:08b}'.format(speed)
+  bin_time = '{0:08b}'.format(time)
+  final_str = bin_speed + bin_time
+  out["backward"] = '11'+final_str
+  out["coordinates"] = f'({x},{y})'
   out['success']=True
   return jsonify(out)
 
 #right() will not take in any parameters. It will output the new coordinates of the robot, where the x coordinate will be updated, and confirmation that the request was successfully processed.
-@app.route('/right', methods = ['POST']) #Creating the right command API
-def right():
+@app.route('/right/<int:speed>/<int:time>', methods = ['POST']) #Creating the right command API
+def right(speed, time):
   global x
   x+=1
   out = {}
-  out["right"] = f'({x},{y})'
+  bin_speed = '{0:08b}'.format(speed)
+  bin_time = '{0:08b}'.format(time)
+  final_str = bin_speed + bin_time
+  out['right']='01'+final_str
+  out["coordinates"] = f'({x},{y})'
   out['success']=True
   return jsonify(out)
 
 #left() will not take in any parameters. It will output the new coordinates of the robot, where the x coordinate will be updated, and confirmation that the request was successfully processed.
-@app.route('/left', methods = ['POST']) #Creating the left command API
-def left():
+@app.route('/left/<int:speed>/<int:time>', methods = ['POST']) #Creating the left command API
+def left(speed, time):
   global x
   x-=1
   out = {}
-  out["left"] = f'({x},{y})'
+  bin_speed = '{0:08b}'.format(speed)
+  bin_time = '{0:08b}'.format(time)
+  final_str = bin_speed + bin_time
+  out['left']='10'+final_str
+  out["coordinates"] = f'({x},{y})'
   out['success']=True
   return jsonify(out)
 
