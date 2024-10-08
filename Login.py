@@ -1,20 +1,23 @@
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
+from os.path import exists
 
+# Code to create the table. The table will be organized by three columns: UserID, Username, and Password. The User ID is the primary key and the table autoincrements with each insertion.
+if exists('database.db') == False:
+    connection = sqlite3.connect('database.db')
+    # sql object that allows us to update and change the database one row at a time.
+    cursor = connection.cursor()
+    login_info = """CREATE TABLE login_info (
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Username VARCHAR(20),
+    Password VARCHAR(30));"""
+    cursor.execute(login_info)
+else:
+    connection = sqlite3.connect('database.db')
+    # sql object that allows us to update and change the database one row at a time.
+    cursor = connection.cursor()
 
-connection = sqlite3.connect('database.db')
-#sql object that allows us to update and change the database one row at a time.
-cursor = connection.cursor()
-
-#Code to create the table. The table will be organized by three columns: UserID, Username, and Password. The User ID is the primary key and the table autoincrements with each insertion.
-'''login_info = """CREATE TABLE login_info (
-UserID INTEGER PRIMARY KEY AUTOINCREMENT,
-Username VARCHAR(20),
-Password VARCHAR(30));"""
-
-
-cursor.execute(login_info)'''
 #The Login class controls the GUI allowing the user to log in or sign up by creating a new username and password.
 class Login:
     LoginSuccessful = False
