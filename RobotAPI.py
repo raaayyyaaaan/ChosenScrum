@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 class TankRobot:
     def __init__(self):
-        self.robot = Motorkit()
+        self.robot = Motorkit(0x40)
 
     def move_fwd(self):
         self.robot.motor1.throttle = 0.5
@@ -31,7 +31,7 @@ class TankRobot:
         self.robot.motor2.throttle = 0.0
 
 
-tank_robot = Motorkit()
+tank_robot = TankRobot()
 
 
 
@@ -40,7 +40,7 @@ tank_robot = Motorkit()
 def fwd():
   out = {} #What the API will return as the output
   tank_robot.move_fwd()
-  out['Move forward 1 second']=True #Shows whether it was successful
+  out['Move forward']=True #Shows whether it was successful
   return jsonify(out) #Returns the JSON output
 
 #bwd() will not take in any parameters. It will output the new coordinates of the robot, where the y coordinate will be updated, and confirmation that the request was successfully processed.
@@ -48,7 +48,7 @@ def fwd():
 def bwd():
   out = {}
   tank_robot.move_backward()
-  out['Move backward 1 second']=True
+  out['Move backward']=True
   return jsonify(out)
 
 #right() will not take in any parameters. It will output the new coordinates of the robot, where the x coordinate will be updated, and confirmation that the request was successfully processed.
@@ -56,7 +56,7 @@ def bwd():
 def right():
   out = {}
   tank_robot.turn_right()
-  out['Turn right for 1 second']=True
+  out['Turn right']=True
   return jsonify(out)
 
 #left() will not take in any parameters. It will output the new coordinates of the robot, where the x coordinate will be updated, and confirmation that the request was successfully processed.
@@ -64,7 +64,7 @@ def right():
 def left():
   out = {}
   tank_robot.turn_left()
-  out['Turn left for one second']=True
+  out['Turn left']=True
   return jsonify(out)
 
 #stop() will not take in any parameters. It will output the final coordinates of the robot before resetting its coordinates to the origin, (0,0). It will also confirm that the STOP command was run successfully.
