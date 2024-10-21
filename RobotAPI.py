@@ -5,9 +5,10 @@
 # The busio module handles I2C communication
 from flask import Flask, request, jsonify
 import time
-from adafruit_pca9685 import PCA9685
-import board
-import busio
+from PCA9685 import PCA9685
+
+pwm = PCA9685(0x40, debug=False)
+pwm.setPWMFreq(40)
 
 
 app = Flask(__name__)
@@ -15,30 +16,24 @@ app = Flask(__name__)
 # The TankRobot class allows us to connect to the motors and control the amount of electrical power being sent to each of the motors. It also has the functions to get the tank to move forward, backward, left, right, and stop.
 class TankRobot:
     def __init__(self):
-        self.i2c = busio.I2C(board.SCL, board.SDA) # Initialize I2C
-        self.pwm = PCA9685(self.i2c) # Initialize PCA9685.
-        self.pwm.frequency = 40  # Sets the frequency to 40 Hz. Different
-        # Define motor channels, essentially distinguish the connection between the commands to each motor.
-        self.motor1_channel = 0
-        self.motor2_channel = 1
-
-# Set how much PWM to each motor channel
-    def set_motor_pwm(self, channel, value):
-        self.pwm.channels[channel].duty_cycle = value
+        self.PWMA = 0
+        self.AIN1 = 1
+        self.AIN2 = 2
+        self.PWMB = 5
+        self.BIN1 = 3
+        self.BIN2 = 4
 
 # Gets the tank to move forward for two seconds before stopping
-    def move_fwd(self):
-        self.set_motor_pwm(self.motor1_channel, 4095)  # Full speed forward
-        self.set_motor_pwm(self.motor2_channel, 4095)  # Full speed forward
-        time.sleep(2)
-        self.stop()
+    def move_fwd(self, motor, speed):
+        pwm.setDutycycle(self.PWMA, speed)
+        pwm.setLevel(self.AIN1, 0)
+        pwm.setLevel(self.AIN2, 1)
 
 # Gets the tank to move backward for two seconds before stopping
-    def move_backward(self):
-        self.set_motor_pwm(self.motor1_channel, 4095)      # Full speed backward
-        self.set_motor_pwm(self.motor2_channel, 4095)      # Full speed backward
-        time.sleep(2)
-        self.stop()
+    def move_backward(self, motor, speed):
+        pwm.setDutycycle(self.PWMA, speed)
+        pwm.setLevel(self.AIN1, 1)
+        pwm.setLevel(self.AIN2, 0)
 
 # Gets the tank to turn left for two seconds before stopping
     def turn_left(self):
@@ -68,7 +63,7 @@ tank_robot = TankRobot()
 # We created a POST route with no parameters, then ran the move_fwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/fwd', methods=['POST'])
 def fwd():
-    tank_robot.move_fwd()
+    tank_robot.move_fwd(0, 100)
     return jsonify({'Move forward': True})
 
 # We create the bwd command. We created a POST route with no parameters, then ran the move_bwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
