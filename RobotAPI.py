@@ -28,7 +28,10 @@ class TankRobot:
         pwm.setDutycycle(self.PWMA, speed)
         pwm.setLevel(self.AIN1, 0)
         pwm.setLevel(self.AIN2, 1)
-
+        pwm.setDutycycle(self.PWMB, speed)
+        pwm.setLevel(self.BIN1, 1)
+        pwm.setLevel(self.BIN2, 0)
+#to get t turn eft, right wheel forward, left wheel backward
 # Gets the tank to move backward for two seconds before stopping
     def move_backward(self, motor, speed):
         pwm.setDutycycle(self.PWMA, speed)
