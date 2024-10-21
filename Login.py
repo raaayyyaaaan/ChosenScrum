@@ -18,9 +18,11 @@ else:
     # sql object that allows us to update and change the database one row at a time.
     cursor = connection.cursor()
 
+
 #The Login class controls the GUI allowing the user to log in or sign up by creating a new username and password.
 class Login:
     LoginSuccessful = False
+    
 # This function checks for the inputted user and password to figure out if the user is in the database, to tell them to sign up (instead of sign in), or proceed to check their inputted password. If the username exists, the password must match the user, or else it will give the user a message box that the password is incorrect.
     def sendinfo(self, root, login, user, password):
         sql = f"SELECT * FROM login_info"
@@ -43,6 +45,8 @@ class Login:
         else:
             login.LoginSuccessful = True
             root.destroy() #Close the Login Tkinter window
+
+    
 #This function asks the user if they want to create a user with the information they entered. If the user returns yes, then it creates the user with that information. 
     def call(self, user, password):
         response = messagebox.askquestion('Create User', f'Would you like to create the user with this information:\nUsername: {user}, Password: {password}')
@@ -50,6 +54,8 @@ class Login:
             return True
         else:
             return False
+            
+            
 #This function takes input of the username and password, creating it into a variable, which gets inserted into the table and sends user a pop up message that their login was successful.
     def create_user(self, user, password):
         if self.call(user, password):
