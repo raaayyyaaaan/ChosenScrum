@@ -17,7 +17,7 @@ class TankRobot:
     def __init__(self):
         self.i2c = busio.I2C(board.SCL, board.SDA) # Initialize I2C
         self.pwm = PCA9685(self.i2c) # Initialize PCA9685.
-        self.pwm.frequency = 40  # Sets the frequency to 40 Hz.
+        self.pwm.frequency = 40  # Sets the frequency to 40 Hz. Different
         # Define motor channels, essentially distinguish the connection between the commands to each motor.
         self.motor1_channel = 0
         self.motor2_channel = 1
@@ -35,8 +35,8 @@ class TankRobot:
 
 # Gets the tank to move backward for two seconds before stopping
     def move_backward(self):
-        self.set_motor_pwm(self.motor1_channel, 0)      # Full speed backward
-        self.set_motor_pwm(self.motor2_channel, 0)      # Full speed backward
+        self.set_motor_pwm(self.motor1_channel, 4095)      # Full speed backward
+        self.set_motor_pwm(self.motor2_channel, 4095)      # Full speed backward
         time.sleep(2)
         self.stop()
 
@@ -87,7 +87,7 @@ def right():
 @app.route('/left', methods=['POST'])
 def left():
     tank_robot.turn_left()
-return jsonify({'Turn left': True})
+    return jsonify({'Turn left': True})
 
 # We create the stop command. We created a POST route with no parameters, then ran the stop command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/stop', methods=['POST'])
