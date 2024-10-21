@@ -24,40 +24,54 @@ class TankRobot:
         self.BIN2 = 4
 
 # Gets the tank to move forward for two seconds before stopping
-    def move_fwd(self, motor, speed):
+    def move_fwd(self, speed):
         pwm.setDutycycle(self.PWMA, speed)
         pwm.setLevel(self.AIN1, 0)
         pwm.setLevel(self.AIN2, 1)
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)
-#to get t turn eft, right wheel forward, left wheel backward
+        time.sleep(3)
+        self.stop()
+
 # Gets the tank to move backward for two seconds before stopping
-    def move_backward(self, motor, speed):
+    def move_backward(self, speed):
         pwm.setDutycycle(self.PWMA, speed)
         pwm.setLevel(self.AIN1, 1)
         pwm.setLevel(self.AIN2, 0)
-
-# Gets the tank to turn left for two seconds before stopping
-    def turn_left(self):
-        self.set_motor_pwm(self.motor1_channel, 0)      # Stop left motor
-        self.set_motor_pwm(self.motor2_channel, 4095)   # Full speed right
-        time.sleep(2)
+        pwm.setDutycycle(self.PWMB, speed)
+        pwm.setLevel(self.BIN1, 0)
+        pwm.setLevel(self.BIN2, 1)
+        time.sleep(3)
         self.stop()
 
+# Gets the tank to turn left for two seconds before stopping
+    def turn_left(self, speed):
+        pwm.setDutycycle(self.PWMA, speed)
+        pwm.setLevel(self.AIN1, 1)
+        pwm.setLevel(self.AIN2, 0)   # Left motor goes backward
+        pwm.setDutycycle(self.PWMB, speed)
+        pwm.setLevel(self.BIN1, 1)
+        pwm.setLevel(self.BIN2, 0)  # Right motor goes forward
+        time.sleep(3)
+        self.stop()
 
 # Gets the tank to turn right for two seconds before stopping
-    def turn_right(self):
-        self.set_motor_pwm(self.motor1_channel, 4095)   # Full speed left
-        self.set_motor_pwm(self.motor2_channel, 0)      # Stop right motor
-        time.sleep(2)
+    def turn_right(self, speed):
+        pwm.setDutycycle(self.PWMA, speed) # Left motor goes forward
+        pwm.setLevel(self.AIN1, 0)
+        pwm.setLevel(self.AIN2, 1)
+        pwm.setDutycycle(self.PWMB, speed) # Right motor goes backward
+        pwm.setLevel(self.BIN1, 0)
+        pwm.setLevel(self.BIN2, 1)
+        time.sleep(3)
         self.stop()
 
 
 # Gets the tank to stop
     def stop(self):
-        self.set_motor_pwm(self.motor1_channel, 0)  # Stop motor 1
-        self.set_motor_pwm(self.motor2_channel, 0)  # Stop motor 2
+        pwm.setDutycycle(self.PWMA, 0)  # Stop left motor
+        pwm.setDutycycle(self.PWMB, 0)  # Stop right motor
 
 
 tank_robot = TankRobot()
@@ -66,25 +80,25 @@ tank_robot = TankRobot()
 # We created a POST route with no parameters, then ran the move_fwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/fwd', methods=['POST'])
 def fwd():
-    tank_robot.move_fwd(0, 100)
+    tank_robot.move_fwd(100)
     return jsonify({'Move forward': True})
 
 # We create the bwd command. We created a POST route with no parameters, then ran the move_bwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/bwd', methods=['POST'])
 def bwd():
-    tank_robot.move_backward()
+    tank_robot.move_backward(100)
     return jsonify({'Move backward': True})
 
 # We create the right command. We created a POST route with no parameters, then ran the move_right command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/right', methods=['POST'])
 def right():
-    tank_robot.turn_right()
+    tank_robot.turn_right(50)
     return jsonify({'Turn right': True})
 
 # We create the left command. We created a POST route with no parameters, then ran the move_left command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/left', methods=['POST'])
 def left():
-    tank_robot.turn_left()
+    tank_robot.turn_left(50)
     return jsonify({'Turn left': True})
 
 # We create the stop command. We created a POST route with no parameters, then ran the stop command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
