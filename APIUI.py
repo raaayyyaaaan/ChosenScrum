@@ -8,6 +8,7 @@ For instance, if you press the Forward button, the text box will show
   "forward": "(0,1)",
   "success": true
 }'''
+
 class APIUI:
     def send_request(self, url): #Sends requests to the host url
         x = requests.post(url)
@@ -17,6 +18,7 @@ class APIUI:
         textbox.delete("0.0", "end") #Delete the previous data in the textbox
         textbox.insert("end", f"{x.text}") #Display the API output
         textbox.config(state="disabled") # Make the state disabled again so that the text box is read only
+      
 #This is the code setting up the tkinter window
     def __init__(self):
 # Creating a light gray window screen of size 640 x 480 titled "CHOSEN.net"
@@ -36,19 +38,24 @@ class APIUI:
         text_box = Text(root, height=40, width=40)
         text_box.pack(expand=True)
         text_box.insert('end',"API Response:")
+      
 #Created the fwdbutton, which runs the output of the fwd() API in the textbox once the user clicks the Forward button using the functions show_response() and send_request()
         fwdbutton = Button(master=frame1, text="Forward", font=("Arial", 14), justify=CENTER, fg="blue", bg="blue", 
                            command=lambda: self.show_response(text_box, self.send_request('http://127.0.0.1:5000/fwd')))
         fwdbutton.grid(column=1,row=3)
+      
 #Created the bwdbutton, which runs the output of the bwd() API in the textbox once the user clicks the Backward button using the functions show_response() and send_request()
         bwdbutton = Button(master=frame1, text="Backward", font=("Arial", 14), justify=CENTER, fg="blue", bg="blue", command=lambda: self.show_response(text_box, self.send_request('http://127.0.0.1:5000/bwd')))
         bwdbutton.grid(column=2,row=3)
+      
 #Created the leftbutton, which runs the output of the left() API in the textbox once the user clicks the Left button using the functions show_response() and send_request()           
         leftbutton = Button(master=frame1, text="Left", font=("Arial", 14), justify=CENTER, fg="blue", bg="blue", command=lambda: self.show_response(text_box, self.send_request('http://127.0.0.1:5000/left')))
         leftbutton.grid(column=3,row=3)
+      
 #Created the rightbutton, which runs the output of the right() API in the textbox once the user clicks the Right button using the functions show_response() and send_request()
         rightbutton = Button(master=frame1, text="Right", font=("Arial", 14), justify=CENTER, fg="blue", bg="blue", command=lambda: self.show_response(text_box, self.send_request('http://127.0.0.1:5000/right')))
         rightbutton.grid(column=4,row=3)
+      
 #Created the stopbutton, which runs the output of the stop() API in the textbox once the user clicks the Stop button using the functions show_response() and send_request()
         stopbutton = Button(master=frame1, text="Stop", font=("Arial", 14), justify=CENTER, fg="blue", bg="blue", command=lambda: self.show_response(text_box, self.send_request('http://127.0.0.1:5000/stop')))
         stopbutton.grid(column=5,row=3)
