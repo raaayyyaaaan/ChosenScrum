@@ -8,7 +8,7 @@ import time
 from PCA9685 import PCA9685
 
 pwm = PCA9685(0x40, debug=False)
-pwm.setPWMFreq(40)
+pwm.setPWMFreq(20)
 
 
 app = Flask(__name__)
@@ -31,7 +31,7 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)
-        time.sleep(3)
+        time.sleep(0.25)
         self.stop()
 
 # Gets the tank to move backward for three seconds before stopping, taking in speed as a parameter.
@@ -42,7 +42,7 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 0) #Right motor goes forwards
         pwm.setLevel(self.BIN2, 1)
-        time.sleep(3)
+        time.sleep(0.25)
         self.stop()
 
 # Gets the tank to turn left for three seconds before stopping, taking in speed as a parameter.
@@ -53,7 +53,7 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)  # Right motor goes forward
-        time.sleep(3)
+        time.sleep(0.2)
         self.stop()
 
 # Gets the tank to turn right for three seconds before stopping, taking in speed as a parameter.
@@ -64,7 +64,7 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed) # Right motor goes backward
         pwm.setLevel(self.BIN1, 0)
         pwm.setLevel(self.BIN2, 1)
-        time.sleep(3)
+        time.sleep(0.2)
         self.stop()
 
 
@@ -72,7 +72,8 @@ class TankRobot:
     def stop(self):
         pwm.setDutycycle(self.PWMA, 0)  # Stop left motor
         pwm.setDutycycle(self.PWMB, 0)  # Stop right motor
-
+        time.sleep(0.25)
+        self.stop()
 
 tank_robot = TankRobot()
 
@@ -80,13 +81,13 @@ tank_robot = TankRobot()
 # We created a POST route with no parameters, then ran the move_fwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/fwd', methods=['POST'])
 def fwd():
-    tank_robot.move_fwd(100) # Move forward at speed 100
+    tank_robot.move_fwd(50) # Move forward at speed 100
     return jsonify({'Move forward': True}) # Return confirmation that the function was ran
 
 # We create the bwd command. We created a POST route with no parameters, then ran the move_bwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/bwd', methods=['POST'])
 def bwd():
-    tank_robot.move_backward(100) # Move backward at speed 100
+    tank_robot.move_backward(50) # Move backward at speed 100
     return jsonify({'Move backward': True}) # Return confirmation that the function was ran
 
 # We create the right command. We created a POST route with no parameters, then ran the move_right command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
