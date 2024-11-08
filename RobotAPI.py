@@ -1,17 +1,21 @@
 # The flask module allows us to create a flask framework, which we can use to send requests using http requests.
 # The time module allows us to fix the duration of time each function moves by seconds.
-# The adafruit_pca9685 module allows us to control how much electrical power needs to be sent
-# The board module allows us to access a series of board-specific objects on the raspberry pi, such as pins.
-# The busio module handles I2C communication
-from flask import Flask, request, jsonify
-import time
+# The PCA9685 module allows us to control how much electrical power needs to be sent
+# The Login module returns the values showing whether the account was found in the database, whether the password matches, and whether the user has access to the Chosen network.
+from flask import Flask, request, jsonify, render_template, redirect, url_for
+from Login import *
 from PCA9685 import PCA9685
 
+# Direct to where the electrical power needs to be sent and how much needs to be sent
 pwm = PCA9685(0x40, debug=False)
 pwm.setPWMFreq(20)
 
+# Create the flask framework
+app = Flask(__name__, template_folder='templates')
 
-app = Flask(__name__)
+def send_request(url):  # Sends requests to the host url
+   x = requests.post(url)
+   return x
 
 # The TankRobot class allows us to connect to the motors and control the amount of electrical power being sent to each of the motors. It also has the functions to get the tank to move forward, backward, left, right, and stop.
 class TankRobot:
@@ -31,8 +35,6 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)
-        time.sleep(0.25)
-        self.stop()
 
 # Gets the tank to move backward for three seconds before stopping, taking in speed as a parameter.
     def move_backward(self, speed):
@@ -42,8 +44,6 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 0) #Right motor goes forwards
         pwm.setLevel(self.BIN2, 1)
-        time.sleep(0.25)
-        self.stop()
 
 # Gets the tank to turn left for three seconds before stopping, taking in speed as a parameter.
     def turn_left(self, speed):
@@ -53,8 +53,6 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)  # Right motor goes forward
-        time.sleep(0.2)
-        self.stop()
 
 # Gets the tank to turn right for three seconds before stopping, taking in speed as a parameter.
     def turn_right(self, speed):
@@ -64,19 +62,14 @@ class TankRobot:
         pwm.setDutycycle(self.PWMB, speed) # Right motor goes backward
         pwm.setLevel(self.BIN1, 0)
         pwm.setLevel(self.BIN2, 1)
-        time.sleep(0.2)
-        self.stop()
 
 
 # Gets the tank to stop, taking in no parameters
     def stop(self):
         pwm.setDutycycle(self.PWMA, 0)  # Stop left motor
         pwm.setDutycycle(self.PWMB, 0)  # Stop right motor
-        time.sleep(0.25)
-        self.stop()
 
 tank_robot = TankRobot()
-
 
 # We created a POST route with no parameters, then ran the move_fwd command on the tank_robot. Then, we returned the JSON dictionary storing the confirmation that the command was run.
 @app.route('/fwd', methods=['POST'])
@@ -108,6 +101,63 @@ def stop():
     tank_robot.stop() # Stop
     return jsonify({'command': 'STOP'}) # Return confirmation that the function was ran
 
+# This opens up the website at the login page
+@app.route('/')
+def start():
+  return redirect(url_for('login'))
 
-if __name__ == "__main__": # This runs the API
+# Using values from the Login module, it determines whether the user exists in the database, whether the information is valid, and whether the user gets access to the Chosen Network. If they do, they get redirected to the main page.
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+  if request.method == 'POST':  # If the form is submitted via POSt
+     send = Login()
+     # Retrieve the form data using 'request.form' which is a dictionary-like object
+     username = request.form['username']
+     password = request.form['password']
+     action = request.form.get('action')
+     if action == 'login':
+          send.sendinfo(username, password)
+          user_exists = send.bFoundAccount
+          user_valid = send.LoginSuccessful
+          # You can now use this data for further processing (like checking credentials)
+          if user_exists == True:
+              if user_valid == True:
+                  return redirect(url_for('buttons'))
+              else:
+                  return 'Password is incorrect, please try again.'
+          else:
+              return "This account does not exist."
+     elif action == 'signup':
+         send.sendinfo(username, password)
+         user_exists = send.bFoundAccount
+         if user_exists == True:
+             return "This username is taken. Please try again."
+         else:
+             send.create_user(username, password)
+             return "Account created!"
+  return render_template('login.html') # Use login html file for the aesthetics
+
+# This function takes in JSON POST requests from the buttons, and makes the robot move accordingly by sending requests to the robot. 
+@app.route('/buttons', methods=['GET', 'POST'])
+def buttons():
+   if request.method == 'POST':
+       # Get JSON data from the buttons
+       jsondata = request.get_json()
+       action = jsondata.get('action')
+       if action == 'fwd':
+           send_request('http://192.168.1.25:5000/fwd')
+       if action == 'bwd':
+           send_request('http://192.168.1.25:5000/bwd')
+       if action == 'right':
+           send_request('http://192.168.1.25:5000/right')
+       if action == 'left':
+           send_request('http://192.168.1.25:5000/left')
+       if action == 'stop':
+           send_request('http://192.168.1.25:5000/stop')
+        
+
+   return render_template('buttons.html') # Use the buttons html file for the aesthetics
+
+
+if __name__ == "__main__": # This runs the app
     app.run(host='0.0.0.0', debug=True, port=5000, use_reloader=False) # Where the API will be hosted
