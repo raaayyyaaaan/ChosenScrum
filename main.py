@@ -122,7 +122,7 @@ def login():
           # You can now use this data for further processing (like checking credentials)
           if user_exists == True:
               if user_valid == True:
-                  return redirect(url_for('buttons'))
+                  return redirect(url_for('screen'))
               else:
                   return 'Password is incorrect, please try again.'
           else:
@@ -155,9 +155,16 @@ def buttons():
        if action == 'stop':
            send_request('http://192.168.1.25:5000/stop')
         
-
    return render_template('buttons.html') # Use the buttons html file for the aesthetics
-
+   
+# Show the console log front end
+@app.route('/console', methods = ['GET', 'POST'])
+def console():
+    return render_template('console.html')
+#Show the screen separating the sebite into four parts: one with the buttons, one with the console log, and the rest as placeholders.
+@app.route('/screen/', methods = ['GET', 'POST'])
+def screen():
+    return render_template('screen.html')
 
 if __name__ == "__main__": # This runs the app
     app.run(host='0.0.0.0', debug=True, port=5000, use_reloader=False) # Where the API will be hosted
