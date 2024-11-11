@@ -31,7 +31,7 @@ def get_logs():
 
 def send_request(url):  # Sends requests to the host url
    x = requests.post(url)
-@@ -35,6 +55,7 @@ def move_fwd(self, speed):
+def move_fwd(self, speed):
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)
@@ -39,7 +39,6 @@ def send_request(url):  # Sends requests to the host url
 
 # Gets the tank to move backward for three seconds before stopping, taking in speed as a parameter.
     def move_backward(self, speed):
-@@ -44,7 +65,7 @@ def move_backward(self, speed):
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 0) #Right motor goes forwards
         pwm.setLevel(self.BIN2, 1)
@@ -48,7 +47,7 @@ def send_request(url):  # Sends requests to the host url
 # Gets the tank to turn left for three seconds before stopping, taking in speed as a parameter.
     def turn_left(self, speed):
         pwm.setDutycycle(self.PWMA, speed)
-@@ -53,7 +74,7 @@ def turn_left(self, speed):
+    def turn_left(self, speed):
         pwm.setDutycycle(self.PWMB, speed)
         pwm.setLevel(self.BIN1, 1)
         pwm.setLevel(self.BIN2, 0)  # Right motor goes forward
@@ -57,7 +56,7 @@ def send_request(url):  # Sends requests to the host url
 # Gets the tank to turn right for three seconds before stopping, taking in speed as a parameter.
     def turn_right(self, speed):
         pwm.setDutycycle(self.PWMA, speed) # Left motor goes forward
-@@ -62,13 +83,13 @@ def turn_right(self, speed):
+    def turn_right(self, speed):
         pwm.setDutycycle(self.PWMB, speed) # Right motor goes backward
         pwm.setLevel(self.BIN1, 0)
         pwm.setLevel(self.BIN2, 1)
@@ -68,11 +67,6 @@ def send_request(url):  # Sends requests to the host url
     def stop(self):
         pwm.setDutycycle(self.PWMA, 0)  # Stop left motor
         pwm.setDutycycle(self.PWMB, 0)  # Stop right motor
-
-        log_action("Rover stopped")
-tank_robot = TankRobot()
-
-utycycle(self.PWMB, 0)  # Stop right motor
 
 tank_robot = TankRobot()
 
@@ -169,5 +163,3 @@ def screen():
 
 if __name__ == "__main__": # This runs the app
     app.run(host='0.0.0.0', debug=True, port=5000, use_reloader=False) # Where the API will be hosted
-
-screen.html
