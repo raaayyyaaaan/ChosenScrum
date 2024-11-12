@@ -171,15 +171,15 @@ def buttons():
        jsondata = request.get_json()
        action = jsondata.get('action')
        if action == 'fwd':
-           send_request('http://127.0.0.1:5000/fwd')
+           send_request('http://192.168.1.25:5123/fwd')
        if action == 'bwd':
-           send_request('http://127.0.0.1:5000/bwd')
+           send_request('http://192.168.1.25:5123/bwd')
        if action == 'right':
-           send_request('http://127.0.0.1:5000/right')
+           send_request('http://192.168.1.25:5123/right')
        if action == 'left':
-           send_request('http://127.0.0.1:5000/left')
+           send_request('http://192.168.1.25:5123/left')
        if action == 'stop':
-           send_request('http://127.0.0.1:5000/stop')
+           send_request('http://192.168.1.25:5123/stop')
         
    return render_template('buttons.html') # Use the buttons html file for the aesthetics
    
@@ -193,4 +193,4 @@ def screen():
     return render_template('screen.html')
 
 if __name__ == "__main__": # This runs the app
-    app.run(host='127.0.0.1', debug=True, port=5000, use_reloader=False) # Where the API will be host
+    app.run(host='192.168.1.25', debug=True, port=5123, use_reloader=False) # Where the API will be host
