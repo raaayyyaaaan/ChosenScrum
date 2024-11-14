@@ -1,38 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Main Page</title>
-  <script>
-    // Function to send a single action (e.g., "fwd", "bwd") to the server
-    function sendAction(action) {
-        fetch('/buttons', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ action: action })
-        })
-        .then(response => response.json())
-        .then(data => console.log('Action sent:', data))
-        .catch(error => console.error('Error:', error));
-    }
-
-    // Attach event listeners to each button
-    document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("fwdButton").onmousedown = () => sendAction('fwd');
-        document.getElementById("bwdButton").onmousedown = () => sendAction('bwd');
-        document.getElementById("leftButton").onmousedown = () => sendAction('left');
-        document.getElementById("rightButton").onmousedown = () => sendAction('right');
-        document.getElementById("stopButton").onmousedown = () => sendAction('stop');
-    });
-  </script>
+    <title>Robot Control Panel</title>
+    <style>
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
+        
+        button {
+            padding: 15px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+        
+        button:hover {
+            background-color: #e0e0e0;
+        }
+        
+        button:active {
+            background-color: #d0d0d0;
+        }
+        
+        #logs {
+            margin: 20px auto;
+            width: 80%;
+            max-width: 600px;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
 </head>
 <body>
-  <h2>Chosen Network</h2>
-  <button id="fwdButton" style="width: 100px; height: 50px;">^</button>
-  <button id="bwdButton" style="width: 100px; height: 50px;">v</button>
-  <button id="leftButton" style="width: 100px; height: 50px;">&lt;</button>
-  <button id="rightButton" style="width: 100px; height: 50px;">&gt;</button>
-  <button id="stopButton" style="width: 100px; height: 50px;">Stop</button>
+    <h1 style="text-align: center;">Robot Control Panel</h1>
+    
+    <div class="control-panel">
+        <button></button>
+        <button onclick="sendCommand('fwd')">⬆️</button>
+        <button></button>
+        <button onclick="sendCommand('left')">⬅️</button>
+        <button onclick="sendCommand('stop')">⏹️</button>
+        <button onclick="sendCommand('right')">➡️</button>
+        <button></button>
+        <button onclick="sendCommand('bwd')">⬇️</button>
+        <button></button>
+    </div>
+    
+    <h2 style="text-align: center;">Activity Logs</h2>
+    <div id="logs"></div>
+
+    <script>
+        function sendCommand(action) {
+            fetch('/buttons', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    updateLogs();
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function updateLogs() {
+            fetch('/logs')
+            .then(response => response.json())
+            .then(logs => {
+                const logsDiv = document.getElementById('logs');
+                logsDiv.innerHTML = logs.map(log => 
+                    `<div class="log-entry">
+                        <span style="color: #666;">${log.timestamp}</span>: 
+                        ${log.action}
+                    </div>`
+                ).join('');
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Update logs every 5 seconds
+        updateLogs();
+        setInterval(updateLogs, 5000);
+    </script>
 </body>
 </html>
