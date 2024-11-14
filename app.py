@@ -65,6 +65,56 @@ def home():
     </html>
     """
 
+@app.route('/logs')
+def logs():
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Robot Logs</title>
+        <style>
+            #logContent {
+                background-color: #f4f4f4;
+                padding: 10px;
+                border: 1px solid #ccc;
+                height: 300px;
+                overflow-y: scroll;
+                font-family: monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Tank Robot Activity Logs</h1>
+        <div id="logContent"></div>
+
+        <script>
+            function updateLogs() {
+                fetch('/get_logs')
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('logContent').innerHTML = data.replace(/\\n/g, '<br>');
+                        // Auto-scroll to bottom
+                        var logContent = document.getElementById('logContent');
+                        logContent.scrollTop = logContent.scrollHeight;
+                    });
+            }
+            
+            // Update logs every second
+            updateLogs();
+            setInterval(updateLogs, 1000);
+        </script>
+    </body>
+    </html>
+    """
+
+@app.route('/get_logs')
+def get_logs():
+    try:
+        with open(LOG_FILE, 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        return "No logs found"
+
 @app.route('/buttons', methods=['POST'])
 def handle_button():
     data = request.get_json()
