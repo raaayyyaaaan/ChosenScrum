@@ -10,6 +10,7 @@
                 .then(response => response.json())
                 .then(logs => {
                     let logDiv = document.getElementById("log-output");
+                    logDiv.innerHTML = "";  // Clear previous logs
                     logs.forEach(log => {
                         let logEntry = document.createElement("p");
                         logEntry.textContent = log;
