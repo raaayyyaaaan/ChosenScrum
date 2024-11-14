@@ -1,29 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tank Robot Logs</title>
-    <script>
-        function fetchLogs() {
-            fetch('/logs')
-                .then(response => response.json())
-                .then(logs => {
-                    let logDiv = document.getElementById("log-output");
-                    logDiv.innerHTML = "";  // Clear previous logs
-                    logs.forEach(log => {
-                        let logEntry = document.createElement("p");
-                        logEntry.textContent = log;
-                        logDiv.appendChild(logEntry);
-                    });
-                });
+    <title>Tank Robot Activity Logs</title>
+    <style>
+        #log-output {
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            max-height: 300px;
+            overflow-y: scroll;
+            font-family: monospace;
         }
-        setInterval(fetchLogs, 2000);
-    </script>
+    </style>
 </head>
 <body>
     <h1>Tank Robot Activity Logs</h1>
-    <div id="log-output" style="background: #f4f4f4; padding: 10px; border: 1px solid #ccc; max-height: 300px; overflow-y: scroll;">
-    </div>
+    <div id="log-output"></div>
+
+    <script>
+        function updateLogs() {
+            fetch('/get_logs')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('log-output').innerHTML = data.replace(/\n/g, '<br>');
+                    // Auto-scroll to bottom
+                    var logContent = document.getElementById('log-output');
+                    logContent.scrollTop = logContent.scrollHeight;
+                });
+        }
+        
+        // Update logs every second
+        updateLogs();
+        setInterval(updateLogs, 1000);
+    </script>
 </body>
 </html>
