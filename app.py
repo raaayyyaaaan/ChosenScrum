@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Basic test route to confirm the server is running
+@app.route('/')
+def home():
+    return "Hello, Flask is running!"
+
 # Route to handle button actions
 @app.route('/buttons', methods=['POST'])
 def handle_button():
@@ -30,4 +35,4 @@ def get_logs():
     return jsonify(logs)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5123)
+    app.run(host='0.0.0.0', port=5123, debug=True)
