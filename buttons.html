@@ -3,35 +3,36 @@
 <head>
   <title>Main Page</title>
   <script>
-   let actionInterval;
-      // Function to send the action (like "fwd", "bwd") to the Flask server
-      function sendaction(action) {
-          fetch('/buttons', {
-              method: 'POST', headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ action: action })
-          })
+    // Function to send a single action (e.g., "fwd", "bwd") to the server
+    function sendAction(action) {
+        fetch('/buttons', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(response => response.json())
+        .then(data => console.log('Action sent:', data))
+        .catch(error => console.error('Error:', error));
+    }
 
-
-
-
-           }
-               function sendingaction(action) { //Sends the action every 500 milliseconds
-                   actionInterval = setInterval(() => sendaction(action), 500);
-       }
-
-       function stopsendingaction() {
-           clearInterval(actionInterval);
-       }
-   </script>
+    // Attach event listeners to each button
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("fwdButton").onmousedown = () => sendAction('fwd');
+        document.getElementById("bwdButton").onmousedown = () => sendAction('bwd');
+        document.getElementById("leftButton").onmousedown = () => sendAction('left');
+        document.getElementById("rightButton").onmousedown = () => sendAction('right');
+        document.getElementById("stopButton").onmousedown = () => sendAction('stop');
+    });
+  </script>
 </head>
 <body>
-   <h2>Chosen Network</h2>
-   <button onmousedown="sendingaction('fwd')" onmouseup="stopsendingaction()" onmouseleave="stopsendingaction()" style="width: 100px; height: 50px;">^</button>
-   <button onmousedown="sendingaction('bwd')" onmouseup="stopsendingaction()" onmouseleave="stopsendingaction()" style="width: 100px; height: 50px;">v</button>
-   <button onmousedown="sendingaction('left')" onmouseup="stopsendingaction()" onmouseleave="stopsendingaction()" style="width: 100px; height: 50px;">&lt;</button>
-   <button onmousedown="sendingaction('right')" onmouseup="stopsendingaction()" onmouseleave="stopsendingaction()" style="width: 100px; height: 50px;">&gt;</button>
-   <button onmousedown="stopsendingaction()" onmouseup="stopsendingaction()" onmouseleave="stopsendingaction()" style="width: 100px; height: 50px;">Stop</button>
+  <h2>Chosen Network</h2>
+  <button id="fwdButton" style="width: 100px; height: 50px;">^</button>
+  <button id="bwdButton" style="width: 100px; height: 50px;">v</button>
+  <button id="leftButton" style="width: 100px; height: 50px;">&lt;</button>
+  <button id="rightButton" style="width: 100px; height: 50px;">&gt;</button>
+  <button id="stopButton" style="width: 100px; height: 50px;">Stop</button>
 </body>
 </html>
