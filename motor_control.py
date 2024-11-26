@@ -1,34 +1,39 @@
+from PCA9685 import PCA9685
 import time
 
-# Import the necessary library for the Waveshare HAT
-# (Replace with the actual library name)
-import waveshare_hat
+pwm = PCA9685(0x40)
+pwm.setPWMFreq(50)
 
-# Initialize the motor driver HAT
-motor_driver = waveshare_hat.MotorDriver()
+def motor_forward():
+    pwm.setDutyCycle(4, 100)  # MA1
+    pwm.setDutyCycle(5, 0)    # MA2
+    pwm.setDutyCycle(6, 100)  # MB1
+    pwm.setDutyCycle(7, 0)    # MB2
 
-# Function to control motor direction and speed
-def set_motor(motor, forward, speed):
-    if motor == "A":
-        if forward:
-            motor_driver.motorA_forward(speed)
-        else:
-            motor_driver.motorA_backward(speed)
-    elif motor == "B":
-        if forward:
-            motor_driver.motorB_forward(speed)
-        else:
-            motor_driver.motorB_backward(speed)
+def motor_backward():
+    pwm.setDutyCycle(4, 0)    # MA1
+    pwm.setDutyCycle(5, 100)  # MA2
+    pwm.setDutyCycle(6, 0)    # MB1
+    pwm.setDutyCycle(7, 100)  # MB2
 
-# Example usage:
+def motor_stop():
+    pwm.setDutyCycle(4, 0)
+    pwm.setDutyCycle(5, 0)
+    pwm.setDutyCycle(6, 0)
+    pwm.setDutyCycle(7, 0)
+
 try:
-    while True:
-        set_motor("A", True, 100)  # Motor A forward
-        set_motor("B", True, 100)  # Motor B forward
-        time.sleep(2)
-        set_motor("A", False, 100)  # Motor A backward
-        set_motor("B", False, 100)  # Motor B backward
-        time.sleep(2)
+    print("Forward")
+    motor_forward()
+    time.sleep(2)
+    
+    print("Backward")
+    motor_backward()
+    time.sleep(2)
+    
+    print("Stop")
+    motor_stop()
+
 except KeyboardInterrupt:
-    # Stop the motors
-    motor_driver.stop()
+    print("Stopped by user")
+    motor_stop()
